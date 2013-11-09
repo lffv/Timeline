@@ -65,7 +65,7 @@
 	        	});
 			}
 		
-		this._el.on("change",function(){alert("aa");});
+		//this._el.on("change",function(){alert("aa");});
 		
 		
 			

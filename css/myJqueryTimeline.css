@@ -1,0 +1,121 @@
+.timeline{
+	position: relative;
+	width: 100%;
+	height: 20px;
+	border-bottom: 7px solid grey;
+	font-family: 'Helvetica Neue', Helvetica, Arial, serif;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	color: #6d6d6d;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 50px;
+}
+
+.timeline div.horizontal-line-year{
+	-moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: -moz-use-text-color -moz-use-text-color -moz-use-text-color #666666;
+    border-image: none;
+    border-style: none none none solid;
+    border-width: 0 0 0 3px;
+    clear: both;
+    height: 20px;
+    position: absolute;
+    width: 0;
+    z-index: 3;	
+}
+
+.timeline .yearTag {
+   
+    position: relative;
+    text-align: center;
+    width: 0px;
+    left:-18px;
+    top:-28px;
+}
+
+.timeline div.monthTag {
+   
+    font-size: 10px;
+    left: -18px;
+    margin-left: 8px;
+    position: relative;
+    text-align: center;
+    top: -15px;
+    width: 0;
+}
+
+.eventBar {
+    background-color: #FF0000;
+    height: 10px;
+    position: absolute;
+    top: 8px;
+    z-index: 100;
+}
+.eventBar:hover {
+    background-color: black;
+    cursor: pointer;
+    z-index: 999;
+    
+}
+.eventBar.active {
+    background-color: green;
+    cursor: pointer;
+    z-index: 998;
+    
+}
+
+.timeline div.monthTag{
+	cursor: pointer;
+}
+.timeline .first div.monthTag {
+   
+    font-size: 10px;
+    left: -18px;
+    margin-left: 8px;
+    position: relative;
+    text-align: center;
+    top: -20px;
+    width: 0;
+    
+}
+
+.timeline div.monthTag:hover {
+   font-size: 20px;
+   left:-22px;
+   top: -22px;
+   
+ 
+}
+.timeline div.horizontal-line-month{
+	-moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: -moz-use-text-color -moz-use-text-color -moz-use-text-color #666666;
+    border-image: none;
+    border-style: none none none ridge;
+    border-width: 0 0 0 3px;
+    clear: both;
+    height: 15px;
+    position: absolute;
+    margin-left:-3px;
+    width: 0;
+    z-index: 3;	
+    top:5px;
+}
+
+.tooltipTime{
+	background-color: red;
+	width: 100px;
+	text-align: center;
+	position: relative;
+	top:-40px;
+	display: none;
+}
+.tooltipTimeArrow{
+	background-color: black;
+	min-width: 100px;	
+}

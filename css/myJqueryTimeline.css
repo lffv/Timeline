@@ -6,9 +6,8 @@
 	font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 	color: #6d6d6d;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 50px;
+	margin: 50px 0 0 0;
+	
 }
 
 .timeline div.horizontal-line-year{
@@ -26,6 +25,12 @@
     width: 0;
     z-index: 3;	
 }
+.timeline div.end.horizontal-line-year{
+	height: 27px;
+}
+.timeline div.initial.horizontal-line-year{
+	height: 27px;
+}
 
 .timeline .yearTag {
    
@@ -36,6 +41,12 @@
     top:-28px;
 }
 
+.timeline div.monthTag.mini{
+	left:-12px;
+}
+.timeline .first div.monthTag.mini{
+	left:-9px;
+}
 .timeline div.monthTag {
    
     font-size: 10px;
@@ -51,6 +62,8 @@
     background-color: #FF0000;
     height: 10px;
     position: absolute;
+    border-color:#366097;
+    border-width:10px;
     top: 8px;
     z-index: 100;
 }
@@ -69,7 +82,16 @@
 
 .timeline div.monthTag{
 	cursor: pointer;
+	display: block;
 }
+
+@media only screen and (max-width: 800px){
+	.timeline div.monthTag.even {display:none;}
+}
+@media only screen and (max-width: 400px){
+	.timeline div.monthTag.odd {display:none;}
+}
+
 .timeline .first div.monthTag {
    
     font-size: 10px;
@@ -82,13 +104,19 @@
     
 }
 
+.timeline .tooltipTimeTitle, .timeline .tooltipTimeArrow{
+	height: 25px;
+}
+
 .timeline div.monthTag:hover {
    font-size: 20px;
-   left:-22px;
-   top: -22px;
+   left:-25px;
+   top: -25px;
+   
    
  
 }
+
 .timeline div.horizontal-line-month{
 	-moz-border-bottom-colors: none;
     -moz-border-left-colors: none;

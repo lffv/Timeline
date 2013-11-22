@@ -1,6 +1,21 @@
 $(function(){
 	
 
+	var evts=[
+			{
+					id:4,
+					title:"title4",
+					start:new Date(2010,3,15),
+					end:new Date(2011,5,15)
+			},
+			{
+					id:5,
+					title:"title5",
+					start:new Date(2011,3,15),
+					end:new Date(2012,5,15)
+			}
+			
+	];
 	var events=[
 			{
 					id:0,
@@ -34,13 +49,16 @@ $(function(){
 							numYears:9,
 							startYear:2005,
 							click:function(e,event){
+								
 								$(".teste").html(event.title);
 							}
 						});
+						
+			
+		var cenas=$('#myTimeline').data('myJquerytimeline');
+		//cenas.addEvents(evts);
+		console.log(cenas);
 	
-
-
-	
-
+	$(window).change(function(){alert("change");});
 	
 });

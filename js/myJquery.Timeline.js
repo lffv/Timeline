@@ -290,10 +290,10 @@
 							});
 							evento= _this.getEvent(_tgt.obj.attr("evt"));
 							_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");		
-							_tooltipEl.append("<div class='tooltipTimeArrow'  >&nbsp;</div>");
-							_tooltipEl.css("left",e.pageX-offset.left-50);
+							
+							_tooltipEl.css("left",e.pageX-offset.left-39);
 							console.log($(_evts).size());
-							_tooltipEl.css("top",(-25*($(_evts).size()+2)));
+							_tooltipEl.css("top",(-32*($(_evts).size()+2)));
 							
 							_this.addEventListner(_tooltipEl,"mouseleave"); 
 							

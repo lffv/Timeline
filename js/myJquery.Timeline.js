@@ -4,6 +4,9 @@
  */
 ;
 (function($) {
+	
+	
+	
 	var pluginName = 'myJqueryTimeline',
 		defaults = {
 			startYear : (new Date()).getFullYear() -1 , // Start with one less year by default
@@ -33,6 +36,8 @@
 
 //INIT DA TIMELINE
 	myJqueryTimeline.prototype.init = function() {	
+		importFiles();
+		
 		var timeline=this;
 		//Desenha timeline
 		this.drawTimeline();
@@ -52,14 +57,21 @@
 			this._eventsEl.map(
 			function( elm, ind ) {
 				elm.obj.on('click',function(e){
-					if(!$(e.target).hasClass("tooltipTimeArrow")){
+					var tgt=e.target;
+					if(!$(tgt).hasClass("tooltipTime")){
 						var $t = timeline.getEventEl($(e.target));
-						if($t.obj.hasClass('eventBar') ||$t.obj.hasClass('tooltipTimeTitle')){
-							console.log($(e.target).attr("evt"));
+						
+						if($t.obj.hasClass('eventBar') ){
+							//console.log($(e.target).attr("evt"));
 							var evento=timeline.getEvent($(e.target).attr("evt"));
-							console.log(evento);
+							//console.log(evento);
 							timeline.options.click(e,evento);	
-						}	
+						}
+						if($(tgt).hasClass("evtTitle")){
+							$(tgt).siblings().map(cleanTooltip);
+							
+							$(tgt).toggleClass("active");
+						}
 					}
 					
 					});
@@ -68,10 +80,18 @@
 		
 		//console.log(_this.getAllEvents());
 		//this._el.on("change",function(){alert("aa");});
-		
-		
+		;
 			
 	};
+	
+	function importFiles(){
+		var imported = document.createElement('script');
+		imported.src = 'js/jquery.hoverIntent.js';
+		document.head.appendChild(imported);	
+	}
+	function cleanTooltip(ind,el){
+		if($(el).hasClass("active"))$(el).toggleClass("active");
+	}
 //DESENHA A LINHA PRINCIPAL DA TIMELINE QUE OCUPA 100% DO ELEMENTO PAI
 	myJqueryTimeline.prototype.drawTimeline=function(){
 		var _this=this;
@@ -252,30 +272,30 @@
 	
 	myJqueryTimeline.prototype.addEventListner = function($retHtml,sEvent){
 		var _this = this;
-		if(sEvent=='resize'){
-			$retHtml.resize(function(e){
-				console.log(e);	
-			});
-			
-		}
+		
+		
 		if(sEvent == 'mouseover'){
 			$retHtml.mouseover( 
 				function(e){
 					//get id elemente
 					
 					var _target=$(e.target);
+				
 					if(_target.hasClass("eventBar")  ){
 						
-						
-						//console.log(_evts);
-						
+					
 						var _tgt=_this.getEventEl(_target);
-						console.log(_tgt.obj.attr("evt"));
+						//console.log(_tgt.obj.attr("evt"));
+						
 						if(_tgt.obj.find(".tooltipTime").length==0){
 							
 							//var evento=_this.options.events[_tgt.obj.attr("evt")];
 							var evento;
 							
+							var p;
+							var evtSelect=$(".eventBar.active").attr("evt");
+							if(!evtSelect)evtSelect=-1;
+								//console.log(evtSelect);
 							var offset=_tgt.obj.offset();
 						
 							var _tooltipEl=$("<div class='tooltipTime' ></div>");
@@ -284,22 +304,42 @@
 							
 							var _evts=_this.getNearEvents(_tgt);
 							$(_evts).each(function(ind,it){
-								console.log(it.obj.attr("evt"));
+								
 								evento=_this.options.events[it.obj.attr("evt")];
-								_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");
+								p=$("<p class='evtTitle' evt='"+evento.id+"'>"+evento.title+"</p>");
+								if(evtSelect>(-1) && evento.id==evtSelect)p.addClass("active");
+								
+								_tooltipEl.append(p)
+								//_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");
 							});
 							evento= _this.getEvent(_tgt.obj.attr("evt"));
-							_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");		
+								//_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");
+								p=$("<p class='evtTitle' evt='"+evento.id+"'>"+evento.title+"</p>");
+								if(evtSelect>(-1) && evento.id==evtSelect)p.addClass("active");
+								_tooltipEl.append(p)
+
+
+							_tooltipEl.css("left",e.pageX-offset.left-67);
+							//console.log($(_evts).size());
 							
-							_tooltipEl.css("left",e.pageX-offset.left-39);
-							console.log($(_evts).size());
-							_tooltipEl.css("top",(-32*($(_evts).size()+2)));
+							console.log($(_tooltipEl).height());
+							//$(_evts).size()==1?;
+							
+							//45*eventos
+							var a=$(_evts).size()+1;
+							
+							_tooltipEl.css("top",(-25*a)-38)
+							//console.log(_tooltipEl.css("top",(-50*($(_evts).size()))-30));
 							
 							_this.addEventListner(_tooltipEl,"mouseleave"); 
 							
 							_tgt.obj.append(_tooltipEl);
 							_tooltipEl.fadeIn();
 						}
+					
+						//console.log(_evts);
+						
+						
 						
 						
 						
@@ -334,22 +374,28 @@
 		}
 		if(sEvent == 'mouseleave'){
 			$retHtml.mouseleave(function(e){
-				
+				console.log(e.target);
 				var _target=$(e.target);
 				
+				e.stopImmediatePropagation();
 					if(_target.hasClass("eventBar")){
 						var _tgt=_this.getEventEl(_target);
-						_tgt.obj.find(".tooltipTime").fadeOut();
+						_tgt.obj.find(".tooltipTime").fadeOut(100);
 						setTimeout(function(){
 							_tgt.obj.find(".tooltipTime").remove();		
 						},300);
 					}
-					if(_target.hasClass("tooltipTimeTitle") ||_target.hasClass("tooltipTimeArrow") ){
-						_this._el.find("tooltipTime").fadeOut();
+					
+					if(_target.hasClass("tooltipTime") ){
+						
+						_target.fadeOut(100);
+						/*
 						setTimeout(function(){
-							_this._el.find(".tooltipTime").remove();		
+							_target.remove();		
 						},300);
+						*/
 					}
+					
 					if(_target.hasClass("monthTag")  ){
 						_target.html(_target.html().charAt(0));
 						
@@ -362,9 +408,11 @@
 		if(sEvent == 'click'){
 		// Attach a click event handler to event objects
 			$retHtml.click(function(e){
-				if(!$(e.target).hasClass("tooltipTimeArrow")){
+				console.log($(".eventBar"));
+				if(!$(e.target).hasClass("tooltipTime")){
 					var _tgt=_this.getEventEl($(e.target));
-					//deselect actual
+					e.stopPropagation();
+					
 					if(_tgt.obj.hasClass("eventBar")){
 						var _actTgt=_this.getEventElActive();
 						if(_actTgt){
@@ -374,7 +422,8 @@
 						//console.log(_this._eventsEl.find(".active"));
 						_tgt.obj.toggleClass("active");
 						
-					}	
+					}
+					
 					//console.log(_tgt);	
 				}
 				

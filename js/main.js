@@ -1,5 +1,6 @@
 $(function(){
 	
+	  	
 
 	var evts=[
 			{
@@ -56,7 +57,7 @@ $(function(){
 						
 			
 		var cenas=$('#myTimeline').data('myJquerytimeline');
-		//cenas.addEvents(evts);
+		cenas.addEvents(evts);
 		console.log(cenas);
 	
 	$(window).change(function(){alert("change");});

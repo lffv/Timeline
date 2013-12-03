@@ -1,7 +1,7 @@
 .timeline{
 	position: relative;
 	width: 100%;
-	height: 20px;
+	height: 30px;
 	border-bottom: 7px solid grey;
 	font-family: 'Helvetica Neue', Helvetica, Arial, serif;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -20,16 +20,16 @@
     border-style: none none none solid;
     border-width: 0 0 0 3px;
     clear: both;
-    height: 20px;
+    height: 30px;
     position: absolute;
     width: 0;
     z-index: 3;	
 }
 .timeline div.end.horizontal-line-year{
-	height: 27px;
+	height: 37px;
 }
 .timeline div.initial.horizontal-line-year{
-	height: 27px;
+	height: 37px;
 }
 
 .timeline .yearTag {
@@ -48,7 +48,7 @@
 	left:-9px;
 }
 .timeline div.monthTag {
-   
+   height:30px;
     font-size: 10px;
     left: -18px;
     margin-left: 8px;
@@ -60,7 +60,7 @@
 
 .eventBar {
     background-color: #FF0000;
-    height: 12px;
+	height: 0px;
     position: absolute;
     border-color:#366097;
     border-width:10px;
@@ -82,6 +82,7 @@
 }
 
 .timeline div.monthTag{
+	
 	cursor: pointer;
 	display: block;
 }
@@ -94,7 +95,7 @@
 }
 
 .timeline .first div.monthTag {
-   
+   height:30px
     font-size: 10px;
     left: -18px;
     margin-left: 8px;
@@ -136,7 +137,7 @@
     border-style: none none none ridge;
     border-width: 0 0 0 3px;
     clear: both;
-    height: 15px;
+    height: 25px;
     position: absolute;
     margin-left:-3px;
     width: 0;

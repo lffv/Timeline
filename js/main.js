@@ -42,13 +42,25 @@ $(function(){
 					start:new Date(2012,2,15),
 					end:new Date(2013,5,15)
 			},
+			{
+					id:4,
+					title:"title4",
+					start:new Date(2010,3,15),
+					end:new Date(2011,5,15)
+			},
+			{
+					id:5,
+					title:"title5",
+					start:new Date(2011,3,15),
+					end:new Date(2012,5,15)
+			}
 		];
 	
 					
 			var tl = $('#myTimeline').myJqueryTimeline({
 							events : events,
-							numYears:9,
-							startYear:2005,
+							numYears:8,
+							startYear:2006,
 							click:function(e,event){
 								
 								$(".teste").html(event.title);
@@ -57,9 +69,12 @@ $(function(){
 						
 			
 		var cenas=$('#myTimeline').data('myJquerytimeline');
-		cenas.addEvents(evts);
+		//cenas.addEvents(evts);
 		console.log(cenas);
 	
 	$(window).change(function(){alert("change");});
+	
+
+	
 	
 });

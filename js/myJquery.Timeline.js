@@ -27,6 +27,8 @@
 		this._monthsEl;
 		this._eventsEl=new Array();
 		this._tooltipEl;
+		this._eventsOver=new Array();
+		this._maxOver;
 		//gapMonth= 100%/(12meses * Nr anos) 
 		this.options.gapMonth=100/(12*this.options.numYears);
 		//console.log(this.options.gapMonth);
@@ -39,6 +41,8 @@
 		importFiles();
 		
 		var timeline=this;
+		
+		this.getSimultaneosEvents();
 		//Desenha timeline
 		this.drawTimeline();
 		//Desenha Years and Save elms in _yearsEl
@@ -54,18 +58,26 @@
 		
 		
 		if(timeline.options.click){
-			this._eventsEl.map(
+			this.addeventsListeners();
+			
+			}
+		
+			
+	};
+	myJqueryTimeline.prototype.addeventsListeners=function(){
+		var _this=this;
+		_this._eventsEl.map(
 			function( elm, ind ) {
 				elm.obj.on('click',function(e){
 					var tgt=e.target;
 					if(!$(tgt).hasClass("tooltipTime")){
-						var $t = timeline.getEventEl($(e.target));
+						var $t = _this.getEventEl($(e.target));
 						
 						if($t.obj.hasClass('eventBar') ){
 							//console.log($(e.target).attr("evt"));
-							var evento=timeline.getEvent($(e.target).attr("evt"));
+							var evento=_this.getEvent($(e.target).attr("evt"));
 							//console.log(evento);
-							timeline.options.click(e,evento);	
+							_this.options.click(e,evento);	
 						}
 						if($(tgt).hasClass("evtTitle")){
 							$(tgt).siblings().map(cleanTooltip);
@@ -76,19 +88,14 @@
 					
 					});
 	        	});
-			}
-		
-		//console.log(_this.getAllEvents());
-		//this._el.on("change",function(){alert("aa");});
-		;
-			
-	};
+	}
 	
 	function importFiles(){
 		var imported = document.createElement('script');
 		imported.src = 'js/jquery.hoverIntent.js';
 		document.head.appendChild(imported);	
 	}
+	
 	function cleanTooltip(ind,el){
 		if($(el).hasClass("active"))$(el).toggleClass("active");
 	}
@@ -97,8 +104,11 @@
 		var _this=this;
 		//cria elemento da linha principal
 		_this._timelineArea=$("<div class='timeline'></div>");
+		var dftHeight=_this._timelineArea.height();
+		
+		_this._timelineArea.height(dftHeight+(_this._maxOver*20));
 		// faz append no elemento enviado por parametro para o construtor
-		_this.addEventListner(_this._timelineArea,'resize');
+		//_this.addEventListner(_this._timelineArea,'resize');
 		
 		/*
 		_this._timelineArea.trigger($.Event('resize'));
@@ -114,6 +124,88 @@
 	};
 	
 	
+	
+	
+	
+	myJqueryTimeline.prototype.getSimultaneosEvents=function(){
+		var _this=this;
+		
+		var dts=new Array();
+		var dta={};
+		$(_this.options.events).each(
+			function(ind,it){
+				dts.push({
+					type:"s",
+					id:it.id,
+					start:it.start,
+				});
+				dts.push({
+					type:"e",
+					id:it.id,
+					start:it.end,
+				});		
+			
+		});
+		dts.sort(compareDate);
+		//console.log(dts);
+		var ct=0,max=0,tot=0;
+		var ret=new Array();
+		var ret2=new Array();
+		$(dts).each(
+			function(ind,it){
+				if(it.type=="s"){
+					//if(ct>0){tot++;console.log(it);}
+					ct++;
+				}else{
+					ct--;
+				}
+				if(ct>0){
+					
+					ret.push(it.id);
+				}
+				else{
+					ret2.push(ret);
+					ret=new Array();
+				}
+				//console.log(ret);
+			});
+			//console.log(ret2);
+		//return (ret2);
+		_this.removeEquals(ret2);
+		_this.getMaxEventsOver();
+	};
+	
+	
+	myJqueryTimeline.prototype.getMaxEventsOver=function(){
+		var _this=this;
+		var max=0;
+		$(_this._eventsOver).each(function(ind,it){
+			if(it.length>max)max=it.length;
+		});
+		_this._maxOver=max;
+	};
+	
+	myJqueryTimeline.prototype.removeEquals=function(ar){ 
+		var _this=this;
+		
+		$(ar).each(function(ind ,it){
+			var ret= new Array();
+			$(it).each(function(ind1,it1){
+					//console.log(it1);
+					var flag=true;
+					for(var i=0;i<ret.length && flag;i++){
+						if(it1==ret[i])flag=false;
+					}
+					 if(flag)ret.push(it1);
+					 
+				});
+				_this._eventsOver.push(ret);
+				//ar[ind]=ret;
+				console.log(ret);	
+			});
+		
+		return ar;
+	}
 	
 //DESENHA AS BARRAS CORRESPONDENTES AOS ANOS
 	myJqueryTimeline.prototype.drawYears = function(){
@@ -148,6 +240,9 @@
 		
 		_this._timelineArea.append(_yearMark);
 		//retorna array com pos para colocar tags dos anos
+		var dftHeight=$(".horizontal-line-year").height();
+		$(".horizontal-line-year").height(dftHeight+(_this._maxOver*20));
+		
 		return _yearsPos;
 	};
 	
@@ -186,6 +281,8 @@
 			}
 			_this._yearsEl[i].months=_monthsEl;
 		}
+		var dftHeight=$(".horizontal-line-month").height();
+		$(".horizontal-line-month").height(dftHeight+(_this._maxOver*20));
 		return _this._yearsEl;
 	};
 	
@@ -205,8 +302,8 @@
 					
 					it1.obj.append(_monthTag);
 				}
-				_this.addEventListner(_monthTag,"mouseover");
-				_this.addEventListner(_monthTag,"mouseleave");
+				//_this.addEventListner(_monthTag,"mouseover");
+				//_this.addEventListner(_monthTag,"mouseleave");
 				
 			});
 		});
@@ -216,14 +313,25 @@
 	
 	myJqueryTimeline.prototype.drawEvents=function(){
 		var _this=this;
+		$(_this._eventsOver).each(
+			function(i,item){
+				$(item).each(function(ind,it){
+					_this.drawEvent(_this.getEvent(it),ind);	
+				});
+				
+				
+			}
+		);
+		/*
 		$(_this.options.events).each(function(ind,it){
-			_this.drawEvent(it);
+			_this.drawEvent(it,ind);
 		});
+		*/
 		return _this._eventsEl;
 	};
 	
 	
-	myJqueryTimeline.prototype.drawEvent=function(it){
+	myJqueryTimeline.prototype.drawEvent=function(it,ind){
 		var _this=this;
 		if(_this.checkDate(it.start,it.end)){
 				var mult=0.4;
@@ -234,11 +342,13 @@
 				_eventBar.obj=$("<div class='eventBar' evt='"+it.id+"'></div>").css("left",(_posWidth.start*_this.options.gapMonth)+"%");
 				_eventBar.obj.css("width",(_posWidth.end*_this.options.gapMonth)+"%");
 				_eventBar.obj.css("margin-left","2px");
+				_eventBar.obj.css("margin-top", 100-(ind*20));
 				//console.log(_eventBar.css("left").split("%")[0]);
 				//_eventBar.css("margin-left",_eventBar.css("margin-left").split("%")[0]+2+"px");
 				_this.addEventListner(_eventBar.obj,"click");
-				_this.addEventListner(_eventBar.obj,"mouseover");
-				_this.addEventListner(_eventBar.obj,"mouseleave");
+				_this.addEventListner(_eventBar.obj,"hover");
+				//_this.addEventListner(_eventBar.obj,"mouseover");
+				//_this.addEventListner(_eventBar.obj,"mouseleave");
 				
 				_this._eventsEl.push(_eventBar);
 				
@@ -273,14 +383,11 @@
 	myJqueryTimeline.prototype.addEventListner = function($retHtml,sEvent){
 		var _this = this;
 		
-		
-		if(sEvent == 'mouseover'){
-			$retHtml.mouseover( 
-				function(e){
-					//get id elemente
-					
+		if(sEvent=='hover'){
+			$retHtml.hoverIntent({
+				over:function(e){
 					var _target=$(e.target);
-				
+					
 					if(_target.hasClass("eventBar")  ){
 						
 					
@@ -300,7 +407,7 @@
 						
 							var _tooltipEl=$("<div class='tooltipTime' ></div>");
 							
-							 
+							 /*
 							
 							var _evts=_this.getNearEvents(_tgt);
 							$(_evts).each(function(ind,it){
@@ -312,26 +419,28 @@
 								_tooltipEl.append(p)
 								//_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");
 							});
+							*/
 							evento= _this.getEvent(_tgt.obj.attr("evt"));
 								//_tooltipEl.append("<div class='tooltipTimeTitle' evt='"+evento.id+"'>"+evento.title+"</div>");
 								p=$("<p class='evtTitle' evt='"+evento.id+"'>"+evento.title+"</p>");
 								if(evtSelect>(-1) && evento.id==evtSelect)p.addClass("active");
 								_tooltipEl.append(p)
 
-
-							_tooltipEl.css("left",e.pageX-offset.left-67);
+							console.log(_tgt.obj.width());
+							_tooltipEl.css("left",-64+(_tgt.obj.width()/2));
 							//console.log($(_evts).size());
 							
-							console.log($(_tooltipEl).height());
+							//console.log($(_tooltipEl).height());
 							//$(_evts).size()==1?;
 							
 							//45*eventos
-							var a=$(_evts).size()+1;
+							//var a=$(_evts).size()+1;
 							
-							_tooltipEl.css("top",(-25*a)-38)
+							//_tooltipEl.css("top",(-25*a)-38)
+							_tooltipEl.css("top",(-25)-38)
 							//console.log(_tooltipEl.css("top",(-50*($(_evts).size()))-30));
 							
-							_this.addEventListner(_tooltipEl,"mouseleave"); 
+							//_this.addEventListner(_tooltipEl,"mouseleave"); 
 							
 							_tgt.obj.append(_tooltipEl);
 							_tooltipEl.fadeIn();
@@ -366,6 +475,40 @@
 						_target.html(months[_target.attr("data")]);
 						
 					}
+				},
+				out:function(e){
+					var _target=$(e.target);
+				
+					e.stopImmediatePropagation();
+					if(_target.hasClass("eventBar")){
+						var _tgt=_this.getEventEl(_target);
+						_tgt.obj.find(".tooltipTime").fadeOut(100);
+						setTimeout(function(){
+							_tgt.obj.find(".tooltipTime").remove();		
+						},300);
+					}
+					
+					if(_target.hasClass("tooltipTime") ){
+						
+						_target.fadeOut(100);
+						
+					}
+					
+					if(_target.hasClass("monthTag")  ){
+						_target.html(_target.html().charAt(0));
+						
+					}
+				},
+				timeout:300,
+			});
+		
+		};
+		if(sEvent == 'mouseover'){
+			$retHtml.mouseover( 
+				function(e){
+					//get id elemente
+					
+					
 					//get event from array
 					
 					
@@ -373,6 +516,7 @@
 			);
 		}
 		if(sEvent == 'mouseleave'){
+			/*
 			$retHtml.mouseleave(function(e){
 				console.log(e.target);
 				var _target=$(e.target);
@@ -389,11 +533,7 @@
 					if(_target.hasClass("tooltipTime") ){
 						
 						_target.fadeOut(100);
-						/*
-						setTimeout(function(){
-							_target.remove();		
-						},300);
-						*/
+						
 					}
 					
 					if(_target.hasClass("monthTag")  ){
@@ -404,6 +544,7 @@
 				
 				
 			});
+			*/
 		}
 		if(sEvent == 'click'){
 		// Attach a click event handler to event objects
@@ -497,7 +638,7 @@
 	
 	myJqueryTimeline.prototype.checkDate=function(start,end){
 		var _this=this;
-		if(start.getFullYear()>_this.options.startYear && end.getFullYear()<_this.options.startYear+_this.options.numYears){
+		if(start.getFullYear()>=_this.options.startYear && end.getFullYear()<_this.options.startYear+_this.options.numYears){
 			if(start.getFullYear()<end.getFullYear()){
 				return true;
 			}
@@ -549,13 +690,26 @@
 	
 	myJqueryTimeline.prototype.addEvents=function(evts){
 		var _this=this;
+		var _org=new Array();
+		var _flag=true;
+		var _evtsAct=_this.options.events;
 		$(evts).each(function(ind,it){
 			_this.options.events.push(it);
 			_this.drawEvent(it);
+			_this.addeventsListeners();
 		});
+		_this.options.events.sort(compareDate);
+		//console.log(_this.options.events);
+		
+		/*
+			_this.drawEvent(it);
+			_this.options.events=org;
+		*/
 	};
 	
-	
+	function compareDate(a,b){
+		return(a.start>b.start);
+	}
 	
 	function copyDeep(arr){
 		var ret=new Array();
